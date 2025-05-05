@@ -1,8 +1,4 @@
-Perfect! Let’s now go in-depth into:
-
----
-
-## 🔹 II. Projection Techniques (In-Depth)
+# 🔹 II. Projection Techniques (In-Depth)
 
 Projection in MongoDB means **controlling what fields to return**, reshape, or compute in the output. It can be used in:
 
@@ -11,7 +7,7 @@ Projection in MongoDB means **controlling what fields to return**, reshape, or c
 
 ---
 
-### ✅ 1. **Include / Exclude Fields** in `find()`
+## ✅ 1. **Include / Exclude Fields** in `find()`
 
 ```js
 // Include only name and email, exclude _id
@@ -29,7 +25,7 @@ db.customers.find(
 
 ---
 
-### ✅ 2. **Computed Fields with `$project` (in Aggregation)**
+## ✅ 2. **Computed Fields with `$project` (in Aggregation)**
 
 The `$project` stage can:
 
@@ -66,7 +62,7 @@ db.bank_accounts.aggregate([
 
 ---
 
-### 🛠 Key Projection Operators (inside `$project`)
+## 🛠 Key Projection Operators (inside `$project`)
 
 | Operator                                            | Description            |
 | --------------------------------------------------- | ---------------------- |
@@ -78,7 +74,7 @@ db.bank_accounts.aggregate([
 
 ---
 
-### ✅ 3. **Conditional Fields with `$cond`**
+## ✅ 3. **Conditional Fields with `$cond`**
 
 ```js
 {
@@ -97,7 +93,7 @@ db.bank_accounts.aggregate([
 
 ---
 
-### ✅ 4. **Flatten Embedded Fields**
+## ✅ 4. **Flatten Embedded Fields**
 
 ```js
 db.customers.aggregate([
@@ -115,7 +111,7 @@ db.customers.aggregate([
 
 ---
 
-### ✅ 5. **Suppress a Field from Nested Object**
+## ✅ 5. **Suppress a Field from Nested Object**
 
 You cannot partially include/exclude nested fields in `find()` — but `$project` allows it:
 
