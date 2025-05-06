@@ -264,19 +264,261 @@ WHERE ST_DWithin(address.geolocation, ST_MakePoint(85.324, 27.7172)::geography, 
 }
 ```
 
-### `$bucket` and `$bucketAuto`: Histogram-style grouping (e.g., age ranges)
+---
+
+## `$bucket`: Manual Range-Based Bucketing (Histogram Binning)
+
+### 🔹 What it does:
+
+Divides documents into **explicit ranges (bins)** based on a field's value. You define the **boundaries** manually, and MongoDB groups documents falling between those values.
+
+> Think of `$bucket` like `CASE WHEN` in SQL or **manual histogram bucketing**.
 
 ---
 
-### `$graphLookup`: Recursive joins (e.g., transaction tracing, referral trees)
+### 🔹 Syntax:
+
+```js
+{
+  $bucket: {
+    groupBy: "<expression>",        // field or expression to bucket on
+    boundaries: [0, 10, 20, 30],    // inclusive lower bound, exclusive upper
+    default: "Other",               // optional: bucket for values outside boundaries
+    output: {
+      count: { $sum: 1 },           // what to compute for each bucket
+      total: { $sum: "$field" }
+    }
+  }
+}
+```
 
 ---
 
-### `$redact`: Conditional visibility (security, masking based on roles)
+### 🔹 Use Case Example: Group Customers by Age Group
+
+```js
+db.customers.aggregate([
+  {
+    $bucket: {
+      groupBy: "$age",
+      boundaries: [0, 18, 30, 50, 70],
+      default: "70+",
+      output: {
+        count: { $sum: 1 },
+      },
+    },
+  },
+]);
+```
 
 ---
 
-### `$function`: Custom logic using JavaScript in aggregation (Node.js-like behavior inside Mongo)
+## `$bucketAuto`: Automatic Histogram Bucketing
+
+### 🔹 What it does:
+
+Like `$bucket`, but MongoDB **automatically calculates boundaries** to create **equally distributed buckets**.
+
+> Think of it like **auto-generated histogram binning**.
+
+---
+
+### 🔹 Syntax:
+
+```js
+{
+  $bucketAuto: {
+    groupBy: "$amount",
+    buckets: 5,
+    output: {
+      totalAmount: { $sum: "$amount" }
+    }
+  }
+}
+```
+
+---
+
+### 🔹 When to Use:
+
+- You don’t know ideal ranges ahead of time.
+- You want equal distribution by document **count**, not range.
+
+---
+
+## `$graphLookup`: Recursive Joins (Hierarchical Queries)
+
+### 🔹 What it does:
+
+Performs **recursive self-joins** to retrieve hierarchical or **multi-level tree data** (e.g., organizational charts, referral chains, transaction traces).
+
+---
+
+### 🔹 Syntax:
+
+```js
+{
+  $graphLookup: {
+    from: "employees",
+    startWith: "$managerId",
+    connectFromField: "managerId",
+    connectToField: "_id",
+    as: "hierarchy"
+  }
+}
+```
+
+---
+
+### 🔹 Use Case Example: Fetch All Subordinates of a Manager
+
+```js
+db.employees.aggregate([
+  {
+    $match: { name: "Alice" },
+  },
+  {
+    $graphLookup: {
+      from: "employees",
+      startWith: "$_id",
+      connectFromField: "_id",
+      connectToField: "managerId",
+      as: "subordinates",
+    },
+  },
+]);
+```
+
+---
+
+### 🔹 Common Use Cases:
+
+- Employee-management hierarchies
+- Referral networks
+- Tracing transaction chains (e.g., who triggered what)
+
+---
+
+## `$redact`: Document-Level Access Control / Filtering
+
+### 🔹 What it does:
+
+Controls **visibility of parts of documents** based on dynamic conditions. Can **prune** or **keep** subdocuments depending on user roles, metadata, etc.
+
+> Think of `$redact` as a **conditional visibility filter** — row-level security.
+
+---
+
+### 🔹 Syntax:
+
+```js
+{
+  $redact: {
+    $cond: {
+      if: { $eq: ["$securityLevel", "PUBLIC"] },
+      then: "$$DESCEND",  // include this document and go deeper
+      else: "$$PRUNE"     // remove this branch/document
+    }
+  }
+}
+```
+
+---
+
+### 🔹 Modes:
+
+- `$$PRUNE`: Exclude this and all child content.
+- `$$KEEP`: Keep this and skip traversing further.
+- `$$DESCEND`: Keep and traverse deeper.
+
+---
+
+### 🔹 Use Case: Mask Private Transactions
+
+```js
+db.transactions.aggregate([
+  {
+    $redact: {
+      $cond: {
+        if: { $eq: ["$visibility", "PRIVATE"] },
+        then: "$$PRUNE",
+        else: "$$KEEP",
+      },
+    },
+  },
+]);
+```
+
+---
+
+## `$function`: Custom JavaScript Logic in Aggregation (MongoDB 4.4+)
+
+### 🔹 What it does:
+
+Lets you run **custom JavaScript logic inside aggregation pipelines** (like `eval`, but scoped safely).
+
+> It's like writing **inline JavaScript code** to compute fields, conditionally transform data, or apply complex logic.
+
+---
+
+### 🔹 Syntax:
+
+```js
+{
+  $addFields: {
+    customField: {
+      $function: {
+        body: function(value) {
+          return value.toUpperCase();
+        },
+        args: ["$name"],
+        lang: "js"
+      }
+    }
+  }
+}
+```
+
+---
+
+### 🔹 Use Case: Custom Currency Conversion
+
+```js
+db.transactions.aggregate([
+  {
+    $addFields: {
+      convertedAmount: {
+        $function: {
+          body: function (amount, rate) {
+            return amount * rate;
+          },
+          args: ["$amount", 1.2],
+          lang: "js",
+        },
+      },
+    },
+  },
+]);
+```
+
+---
+
+### ⚠️ Caution:
+
+- `$function` **can impact performance** (runs in JavaScript VM inside the MongoDB engine).
+- Use it **only when necessary**, and not on large datasets unless indexed/memoized well.
+
+---
+
+## 🔚 Summary Table:
+
+| Stage          | Purpose                            | SQL Analogy                   | Real Use Case Example                 |
+| -------------- | ---------------------------------- | ----------------------------- | ------------------------------------- |
+| `$bucket`      | Manual histogram grouping          | `CASE WHEN`                   | Age ranges, balance tiers             |
+| `$bucketAuto`  | Auto-balanced histogram grouping   | Quantile buckets              | Salary distribution                   |
+| `$graphLookup` | Recursive, hierarchical joins      | Recursive CTEs                | Org trees, referral depth             |
+| `$redact`      | Conditional inclusion/exclusion    | Row-level security            | Masking private data                  |
+| `$function`    | Inline custom logic in aggregation | UDFs (User-Defined Functions) | Custom currency/logic transformations |
 
 ---
 
