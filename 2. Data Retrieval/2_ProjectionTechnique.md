@@ -27,7 +27,52 @@ db.customers.find(
 
 ## ✅ 2. **Computed Fields with `$project` (in Aggregation)**
 
-The `$project` stage can:
+```js
+//  customer whole document
+{
+  _id: 'a3cc36d6-96b4-4d01-a33b-3d3b8c54424a',
+  full_name: 'Customer 7',
+  phone_number: '1000000007',
+  email_address: 'customer7@example.com',
+  address: {
+    country: 'USA',
+    state: 'California',
+    district: 'District 7',
+    street: '123 Main St Apt 7',
+    geolocation: {
+      latitude: -4.148627431581005,
+      longitude: -165.28397707755968
+    }
+  },
+  date_of_birth: '1980-01-08',
+  gender: 'Female',
+  created_at: '2025-05-05T04:55:26.375989Z',
+  schemaVersion: 1,
+  _class: 'io.ignius.banking_mongodb.model.Customer'
+}
+
+```
+
+it can be reshaped to
+
+```js
+// Query
+db.customers.find({gender: "Female"}, { name: "$full_name", address: {geolocation:1}, dob:"$date_of_birth", _id:0}).limit(1);
+
+// Result
+{
+  address: {
+    geolocation: {
+      latitude: -4.148627431581005,
+      longitude: -165.28397707755968
+    }
+  },
+  name: 'Customer 7',
+  dob: '1980-01-08'
+}
+```
+
+2. The `$project` stage can:
 
 - include/exclude fields
 - compute new fields
