@@ -119,6 +119,49 @@ db.bank_accounts.aggregate([
 
 ---
 
+```js
+db.customers.aggregate([
+  {
+    $project: {
+      _id: 0,
+      full_address: {
+        $concat: [
+          "$address.country",
+          ", ",
+          "$address.state",
+          ", ",
+          "$address.district",
+          ", ",
+          "$address.street",
+        ],
+      },
+    },
+  },
+  {
+    $limit: 2,
+  },
+]);
+
+// Result
+[{
+  full_address: "USA, California, District 3, 223 Wood St Apt 1";
+}
+{
+  full_address: 'USA, California, District 7, 123 Main St Apt 7'
+}]
+```
+
+```js
+db.transaction.aggregate([
+  {
+    $project: {
+      totalAmount: { $add: ["$credit", "$debit"] },
+      increasedAmount: { $add: ["$debit", 50] },
+    },
+  },
+]);
+```
+
 ## ✅ 3. **Conditional Fields with `$cond`**
 
 ```js
@@ -167,6 +210,65 @@ You cannot partially include/exclude nested fields in `find()` — but `$project
       full_name: "$accountHolder.full_name",
       email_address: "$accountHolder.email_address"
     }
+  }
+}
+```
+
+Example:
+
+```js
+// query
+db.customers.aggregate([
+  {
+    $project: {
+      customerDetail: {
+        name: "$full_name",
+        dob: "$date_of_birth",
+        gender: "$gender",
+        exact_location: {
+          $add: [
+            "$address.geolocation.latitude",
+            "$address.geolocation.longitude",
+          ],
+        },
+        contact: { $concat: ["$phone_number", ", ", "$email_address"] },
+      },
+    },
+  },
+  {
+    $limit: 3,
+  },
+]);
+
+// Result
+{
+  _id: 'a3cc36d6-96b4-4d01-a33b-3d3b8c54424a',
+  customerDetail: {
+    name: 'Customer 7',
+    dob: '1980-01-08',
+    gender: 'Female',
+    exact_location: -169.43260450914067,
+    contact: '1000000007, customer7@example.com'
+  }
+}
+{
+  _id: '09739323-42b2-4366-8363-641edfbbb6a0',
+  customerDetail: {
+    name: 'Customer 1',
+    dob: '1980-01-02',
+    gender: 'Female',
+    exact_location: 47.61055574281821,
+    contact: '1000000001, customer1@example.com'
+  }
+}
+{
+  _id: '608cef73-78b7-4f88-b86a-63f1639a2c8d',
+  customerDetail: {
+    name: 'Customer 18',
+    dob: '1980-01-19',
+    gender: 'Male',
+    exact_location: 48.591316453202424,
+    contact: '1000000018, customer18@example.com'
   }
 }
 ```
