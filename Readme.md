@@ -46,8 +46,10 @@ This is now a standalone top-priority category — and rightfully so.
 
   - `$match`, `$group`, `$project`, `$sort`, `$limit`, `$unwind`, `$lookup` (joins)
 
-- **Text search** with full-text indexes: `$text`, `$search`, score sorting
-- **Geospatial queries**: `$near`, `$geoWithin`, `$geoIntersects`
+- **Text, Regex, Geospatial Data**
+  - **full-text** indexes: `$text`, `$search`, score sorting
+  - **Regex**
+  - **Geospatial queries**: `$near`, `$geoWithin`, `$geoIntersects`
 - **Pagination**:
 
   - `skip + limit` (simple but slow for large skips)
