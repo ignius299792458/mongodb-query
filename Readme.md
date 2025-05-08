@@ -68,7 +68,7 @@ This is now a standalone top-priority category — and rightfully so.
 
 Closely tied with retrieval, but focused on performance.
 
-### v. Index Types:
+### i. Index Types:
 
 - Single-field
 - Compound indexes
@@ -77,7 +77,7 @@ Closely tied with retrieval, but focused on performance.
 - Geospatial indexes
 - Hashed indexes (for sharding)
 
-### vi. Optimization Practices:
+### ii. Optimization Practices:
 
 - Use **covered indexes**
 - Watch for **index cardinality** and **selectivity**
@@ -88,7 +88,7 @@ Closely tied with retrieval, but focused on performance.
 
 ## 4. **Transactions & Concurrency Control**
 
-### 🔹 Core Concepts:
+### i. Core Concepts:
 
 - **Atomicity** on single documents
 - **Multi-document transactions** (MongoDB 4.0+)
@@ -101,13 +101,13 @@ Closely tied with retrieval, but focused on performance.
 
 ## 5. **Replication, Sharding & High Availability**
 
-### 🔹 Replication:
+### i. Replication:
 
 - **Replica Sets**, automatic failover
 - **Read preference** tuning (`primary`, `secondary`, `nearest`)
 - **Write concern** for durability
 
-### 🔹 Sharding:
+### ii. Sharding:
 
 - Choosing optimal **shard keys** (avoid monotonic keys like `_id`)
 - **Chunk balancing**
@@ -117,12 +117,12 @@ Closely tied with retrieval, but focused on performance.
 
 ## 6. **Schema Evolution & Data Migration**
 
-### 🔹 Versioning:
+### i. Versioning:
 
 - Embed `_schemaVersion` in docs
 - Maintain backward compatibility
 
-### 🔹 Migration Techniques:
+### ii. Migration Techniques:
 
 - Bulk writes
 - Aggregation pipelines for transforms
