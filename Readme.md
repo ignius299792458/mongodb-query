@@ -90,12 +90,12 @@ Closely tied with retrieval, but focused on performance.
 
 ### i. Core Concepts:
 
-- **Atomicity** on single documents
-- **Multi-document transactions** (MongoDB 4.0+)
-- Read/write concerns
-- **Retryable writes**
-- **Snapshot isolation**
-- **Optimistic concurrency** (versioning)
+- **`Atomicity`** on single documents
+- **`Multi-document transactions`** (MongoDB 4.0+)
+- **`Read/write concerns`**
+- **`Retryable writes`**
+- **`Snapshot isolation`**
+- **`Optimistic concurrency`** (versioning)
 
 ---
 
