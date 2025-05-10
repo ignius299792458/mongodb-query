@@ -1,4 +1,4 @@
-This is follow of how Replication is implemented.
+This is the flow of how Replication Hands-On is implemented.
 
 1. MongoDB Replica-Set using `mongosh`
 2. How to setup all replica at dev and prod ?
