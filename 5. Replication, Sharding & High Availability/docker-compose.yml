@@ -1,0 +1,39 @@
+services:
+  mongo1:
+    image: mongo
+    container_name: mongo1
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data/mongo1:/data/db
+    networks:
+      - mongo-replication-ntk
+    command: ["mongod", "--replSet", "rs0"]
+
+  mongo2:
+    image: mongo
+    container_name: mongo2
+    ports:
+      - 27018:27017
+    volumes:
+      - ./data/mongo2:/data/db
+    networks:
+      - mongo-replication-ntk
+    command: ["mongod", "--replSet", "rs0"]
+
+  mongo3:
+    image: mongo
+    container_name: mongo3
+    ports:
+      - 27019:27017
+    volumes:
+      - ./data/mongo3:/data/db
+    networks:
+      - mongo-replication-ntk
+    command: ["mongod", "--replSet", "rs0"]
+
+networks:
+  mongo-replication-ntk:
+    name: mongo_replication_ntk
+    driver: bridge
+

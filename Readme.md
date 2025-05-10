@@ -103,9 +103,9 @@ Closely tied with retrieval, but focused on performance.
 
 ### i. Replication:
 
-- **Replica Sets**, automatic failover
-- **Read preference** tuning (`primary`, `secondary`, `nearest`)
-- **Write concern** for durability
+- **`Replica Sets`**, **`automatic failover`**
+- **`Read preference`** tuning (`primary`, `secondary`, `nearest`)
+- **`Write concern`** for durability
 
 ### ii. Sharding:
 
