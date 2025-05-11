@@ -1,0 +1,75 @@
+services:
+  configsvr1:
+    image: mongo
+    container_name: configsvr1-ps
+    command: mongod --configsvr --replSet configReplSet --port 27017
+    volumes:
+      - ./data/config1:/data/db
+    ports:
+      - 27101:27017
+
+  configsvr2:
+    image: mongo
+    container_name: configsvr2-ps
+    command: mongod --configsvr --replSet configReplSet --port 27017
+    volumes:
+      - ./data/config2:/data/db
+    ports:
+      - 27102:27017
+
+  configsvr3:
+    image: mongo
+    container_name: configsvr3-ps
+    command: mongod --configsvr --replSet configReplSet --port 27017
+    volumes:
+      - ./data/config3:/data/db
+    ports:
+      - 27103:27017
+
+  shardNP_EAST:
+    image: mongo
+    container_name: shardNP_EAST-ps
+    command: mongod --shardsvr --replSet shardNP_EAST --port 27017
+    volumes:
+      - ./data/shardNP_EAST:/data/db
+    ports:
+      - 27111:27017
+
+  shardNP_MID:
+    image: mongo
+    container_name: shardNP_MID-ps
+    command: mongod --shardsvr --replSet shardNP_MID --port 27017
+    volumes:
+      - ./data/shardNP_MID:/data/db
+    ports:
+      - 27112:27017
+
+  shardNP_WEST:
+    image: mongo
+    container_name: shardNP_WEST-ps
+    command: mongod --shardsvr --replSet shardNP_WEST --port 27017
+    volumes:
+      - ./data/shardNP_WEST:/data/db
+    ports:
+      - 27113:27017
+
+  mongos:
+    image: mongo
+    container_name: mongos-ps
+    depends_on:
+      - configsvr1
+      - configsvr2
+      - configsvr3
+    ports:
+      - 27020:27017
+    command: >
+      mongos --configdb configReplSet/configsvr1:27017,configsvr2:27017,configsvr3:27017
+    links:
+      - configsvr1
+      - configsvr2
+      - configsvr3
+      - shardNP_EAST
+      - shardNP_MID
+      - shardNP_WEST
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d

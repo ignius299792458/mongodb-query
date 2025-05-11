@@ -19,7 +19,7 @@ services:
       - ./data/mongo2:/data/db
     networks:
       - mongo-replication-ntk
-    command: ["mongod", "--replSet", "rs0"]
+    command: ["mongod", "--replSet", "rs1"]
 
   mongo3:
     image: mongo
@@ -30,7 +30,7 @@ services:
       - ./data/mongo3:/data/db
     networks:
       - mongo-replication-ntk
-    command: ["mongod", "--replSet", "rs0"]
+    command: ["mongod", "--replSet", "rs2"]
 
 networks:
   mongo-replication-ntk:
