@@ -106,12 +106,14 @@ Closely tied with retrieval, but focused on performance.
 - **`Replica Sets`**, **`automatic failover`**
 - **`Read preference`** tuning (`primary`, `secondary`, `nearest`)
 - **`Write concern`** for durability
+- [mongodb_doc_replication](https://www.mongodb.com/docs/manual/replication/)
 
 ### ii. Sharding:
 
-- Choosing optimal **shard keys** (avoid monotonic keys like `_id`)
-- **Chunk balancing**
-- **Zone-based sharding**
+- Choosing optimal **`shard keys`** (avoid monotonic keys like `_id`)
+- **`Chunk balancing`**
+- **`Zone-based sharding`**
+- [mongodb_doc_sharding](https://www.mongodb.com/docs/manual/sharding/)
 
 ---
 
