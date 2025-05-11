@@ -93,7 +93,7 @@ sh.addShard("sharedNP_EAST/localhost:27019");
 sh.enableSharding("banking");
 
 sh.shardCollection("banking.transactions", {
-  region: 1,
+  banking_region: 1,
   transactionId: 1,
 });
 ```
@@ -101,9 +101,9 @@ sh.shardCollection("banking.transactions", {
 ### ➤ Tag shards with zones:
 
 ```js
-sh.addShardTag("sharedNP_WEST", "US");
-sh.addShardTag("sharedNP_MID", "EU");
-sh.addShardTag("sharedNP_EAST", "ASIA");
+sh.addShardTag("sharedNP_WEST", "NP_WEST");
+sh.addShardTag("sharedNP_MID", "NP_MID");
+sh.addShardTag("sharedNP_EAST", "NP_EAST");
 ```
 
 ### ➤ Assign zone key ranges:
@@ -111,21 +111,21 @@ sh.addShardTag("sharedNP_EAST", "ASIA");
 ```js
 sh.updateZoneKeyRange(
   "banking.transactions",
-  { region: "US" },
-  { region: "US" },
-  "US"
+  { banking_region: "NP_WEST" },
+  { banking_region: "US~" },
+  "NP_WEST"
 );
 sh.updateZoneKeyRange(
   "banking.transactions",
-  { region: "EU" },
-  { region: "EU" },
-  "EU"
+  { banking_region: "NP_MID" },
+  { banking_region: "EU~" },
+  "NP_MID"
 );
 sh.updateZoneKeyRange(
   "banking.transactions",
-  { region: "ASIA" },
-  { region: "ASIA" },
-  "ASIA"
+  { banking_region: "NP_EAST" },
+  { banking_region: "ASIA~" },
+  "NP_EAST"
 );
 ```
 
@@ -137,16 +137,16 @@ sh.updateZoneKeyRange(
 use banking
 
 db.transactions.insertMany([
-  { region: "US", transactionId: "tx001", amount: 100, accountId: "acc001" },
-  { region: "EU", transactionId: "tx002", amount: 200, accountId: "acc002" },
-  { region: "ASIA", transactionId: "tx003", amount: 300, accountId: "acc003" }
+  { banking_region: "NP_WEST", transactionId: "tx001", amount: 100, accountId: "acc001" },
+  { banking_region: "NP_MID", transactionId: "tx002", amount: 200, accountId: "acc002" },
+  { banking_region: "NP_EAST", transactionId: "tx003", amount: 300, accountId: "acc003" }
 ]);
 ```
 
 🔍 Test a query:
 
 ```js
-db.transactions.find({ region: "EU" });
+db.transactions.find({ banking_region: "NP_MID" });
 ```
 
 ➡ Routed directly to `sharedNP_MID` only
@@ -164,13 +164,13 @@ const txn = session.getDatabase("banking");
 session.startTransaction();
 
 txn.transactions.insertOne({
-  region: "US",
+  banking_region: "NP_WEST",
   transactionId: "tx100",
   amount: 999,
   accountId: "acc900",
 });
 txn.transactions.insertOne({
-  region: "ASIA",
+  banking_region: "NP_EAST",
   transactionId: "tx101",
   amount: 777,
   accountId: "acc901",
